@@ -1,0 +1,32 @@
+---
+- hosts: localhost
+
+  tasks:
+  - name: install openssh-server
+    yum:
+       name: openssh-server
+       state: latest
+
+  - name: ensure openssh-server is running
+    service:
+       name: sshd
+       state: stopped
+
+  - name: allow root SSH access
+    lineinfile: dest=/etc/ssh/sshd_config
+       regexp="^#PermitRootLogin"
+       line="PermitRootLogin yes"
+       state=present
+    notify:
+       - restart sshd
+
+  - name: enable sshd service
+    service:
+       name: sshd
+       enabled: true
+
+  handlers:
+     - name: restart sshd
+       service:
+          name: sshd
+          state: restarted
