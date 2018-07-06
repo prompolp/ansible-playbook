@@ -2,6 +2,8 @@
 - hosts: localhost
 
   tasks:
+#  - include_vars: users.yml
+
   - name: install openssh-server
     yum:
        name: openssh-server
@@ -24,6 +26,19 @@
     service:
        name: sshd
        enabled: true
+
+  - name: Add officenames
+    user:
+       name: "{{ item.username }}"
+       shell: /sbin/nologin
+       generate_ssh_key: yes
+       ssh_key_bits: 4096
+       ssh_key_file: .ssh/id_rsa
+#    with_items: '{{ users }}'
+    with_items:
+       - { username: jon }
+       - { username: mark }
+       - { username: tom }
 
   handlers:
      - name: restart sshd
